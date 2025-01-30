@@ -1,0 +1,59 @@
+// Selectăm elementele HTML
+const daysList = document.getElementById('days-list');
+const pauseCheckbox = document.getElementById('pause-checkbox');
+
+// Functie pentru mutarea ultimului element la începutul listei
+function moveLastToFirst() {
+    const lastItem = daysList.lastElementChild;
+    daysList.insertBefore(lastItem, daysList.firstElementChild);
+}
+
+// Funcție pentru a salva ordinea zilelor în localStorage
+function saveOrder() {
+    const days = Array.from(daysList.children).map(item => item.textContent);
+    localStorage.setItem('daysOrder', JSON.stringify(days));
+}
+
+// Funcție pentru a încărca ordinea salvată din localStorage
+function loadOrder() {
+    const savedOrder = localStorage.getItem('daysOrder');
+    if (savedOrder) {
+        const days = JSON.parse(savedOrder);
+        daysList.innerHTML = ''; // Golim lista
+        days.forEach(day => {
+            const li = document.createElement('li');
+            li.textContent = day;
+            daysList.appendChild(li);
+        });
+    }
+}
+
+// La încărcarea paginii, verificăm dacă checkbox-ul a fost bifat anterior
+window.onload = function() {
+    loadOrder();
+
+    let moveInterval;
+    let isPaused = false;
+
+    // Funcție pentru a porni/oprirea mutării elementelor pe baza checkbox-ului
+    function toggleMove() {
+        if (pauseCheckbox.checked) {
+            if (!isPaused) {
+                moveInterval = setInterval(moveLastToFirst, 3000); // Mutăm elementul la fiecare 3 secunde
+                isPaused = true;
+            }
+        } else {
+            clearInterval(moveInterval); // Oprim mutarea dacă checkbox-ul este debifat
+            isPaused = false;
+        }
+    }
+
+    // Apelăm funcția de toggle la fiecare schimbare a stării checkbox-ului
+    pauseCheckbox.addEventListener('change', toggleMove);
+
+    // Dacă checkbox-ul este bifat la încărcarea paginii, începem mutarea
+    toggleMove();
+};
+
+// Salvăm ordinea zilelor la reîncărcare
+window.onbeforeunload = saveOrder;
