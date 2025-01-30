@@ -1,0 +1,13 @@
+/* Stiluri simple pentru lista și checkbox */
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin: 5px;
+}
+
+#pause-checkbox {
+    margin: 10px;
+}
